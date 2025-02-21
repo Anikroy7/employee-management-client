@@ -6,6 +6,7 @@ import * as React from "react";
 import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 
 export interface ProvidersProps {
@@ -21,13 +22,17 @@ declare module "@react-types/shared" {
     }
 }
 
+export const queryClient = new QueryClient();
+
 
 export function Providers({ children, themeProps }: ProvidersProps) {
     const router = useRouter();
 
     return (
-        <HeroUIProvider navigate={router.push}>
-            <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-        </HeroUIProvider>
+        <QueryClientProvider client={queryClient}>
+            <HeroUIProvider navigate={router.push}>
+                <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+            </HeroUIProvider>
+        </QueryClientProvider>
     );
 }
