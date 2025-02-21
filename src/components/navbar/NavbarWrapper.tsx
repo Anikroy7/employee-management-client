@@ -31,7 +31,7 @@ interface Props {
 export const NavbarWrapper = ({ children }: Props) => {
     return (
         <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            <Navbar>
+            <Navbar maxWidth="2xl">
               
                 <NavbarContent as="div" justify="end">
                     <ThemeSwitch />

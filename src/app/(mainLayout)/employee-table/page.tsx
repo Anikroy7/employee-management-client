@@ -10,6 +10,10 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from 
 import { Tooltip } from "@heroui/tooltip";
 import { NextPage } from "next";
 import Link from "next/link";
+import { FaPlus } from "react-icons/fa";
+import { Button } from "@heroui/button";
+
+
 
 const Page: NextPage = () => {
   const { data, isLoading } = useGetAllEmployees();
@@ -23,26 +27,36 @@ const Page: NextPage = () => {
   return (
     <>
       <div className="container mx-auto p-6">
-        <ul className="flex my-4">
-          <li className="flex gap-2">
-            <HouseIcon />
-            <Link href={"/"}>
-              <span>Home</span>
+        <div>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-semibold">Employees</h1>
+            <Link href="/add-employee">
+            <Button className="flex items-center gap-2">
+      <FaPlus size={16} /> Add Employee
+    </Button>
             </Link>
-            <span> / </span>{" "}
-          </li>
+          </div>
+          <ul className="flex my-4">
+            <li className="flex gap-2">
+              <HouseIcon />
+              <Link href={"/"}>
+                <span>Home</span>
+              </Link>
+              <span> / </span>{" "}
+            </li>
 
-          <li className="flex gap-2">
-            <UsersIcon />
-            <span>Employees</span>
-            <span> / </span>{" "}
-          </li>
-          <li className="flex gap-2">
-            <span>Table</span>
-          </li>
-        </ul>
+            <li className="flex gap-2">
+              <UsersIcon />
+              <span>Employees</span>
+              <span> / </span>{" "}
+            </li>
+            <li className="flex gap-2">
+              <span>Table</span>
+            </li>
+          </ul>
 
-        <h3 className="text-xl font-semibold my-6">All Employees With Table View</h3>
+          <h3 className="text-xl font-semibold my-6">All Employees With Table View</h3>
+        </div>
         {
 
         }
