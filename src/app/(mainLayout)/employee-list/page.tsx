@@ -15,7 +15,7 @@ const Page: NextPage = () => {
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
     </div>
   }
-  console.log(data)
+  const employees = data?.data?.data;
   return (
     <div className="container mx-auto p-6">
       <ul className="flex my-4">
@@ -39,7 +39,7 @@ const Page: NextPage = () => {
 
       <h3 className="text-xl font-semibold my-6">All Employees With Card View</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.data?.data?.map((employee:TEmployee) => (
+        {employees?.map((employee:TEmployee) => (
           <div key={employee.id} className="shadow-lg rounded-lg overflow-hidden">
             <div className="flex items-center px-6 py-4 bg-gray-600">
               {employee.imageUrl ? (
