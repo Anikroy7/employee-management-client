@@ -1,8 +1,7 @@
 import "@/src/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-
-
+import { Toaster } from "sonner";
 import { siteConfig } from "@/src/config/site";
 import { Providers } from "../libs/providers";
 
@@ -41,6 +40,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           {children}
+           <Toaster />
         </Providers>
       </body>
     </html>

@@ -1,6 +1,7 @@
 "use client"
 
 import { DeleteIcon, EditIcon, HouseIcon, UsersIcon } from "@/src/components/icons";
+import ConfirmationModal from "@/src/components/modal/ConfirmationModal";
 import { useGetAllEmployees } from "@/src/hooks/employee.hook";
 import { TEmployee } from "@/src/types";
 import { Avatar } from "@heroui/avatar";
@@ -58,7 +59,7 @@ const Page: NextPage = () => {
           {
             employees.length > 0 ? <TableBody>
               {
-                employees.map((employee: TEmployee) => <TableRow key="4">
+                employees.map((employee: TEmployee) => <TableRow key={employee.id}>
                   <TableCell>
                     {
                       <Avatar size="md" src={employee.imageUrl} />
@@ -80,11 +81,15 @@ const Page: NextPage = () => {
                           <EditIcon />
                         </span>
                       </Tooltip>
-                      <Tooltip color="danger" content="Delete user">
-                        <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                          <DeleteIcon />
-                        </span>
-                      </Tooltip>
+                      <ConfirmationModal
+                        employeeId={employee.id}
+                        modalTitle={<Tooltip color="danger" content="Delete employee">
+                          <span className="text-lg  text-danger cursor-pointer active:opacity-50">
+                            <DeleteIcon />
+                          </span>
+                        </Tooltip>}
+                      />
+
                     </div>
                   </TableCell>
                 </TableRow>)

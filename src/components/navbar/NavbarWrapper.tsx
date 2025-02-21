@@ -40,5 +40,5 @@ export const NavbarWrapper = ({ children }: Props) => {
             </Navbar>
             {children}
         </div>
-    );
+    );  
 }   
