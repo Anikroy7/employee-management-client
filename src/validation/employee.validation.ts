@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createEmployeeValidationSchema = z.object({
+export const employeeValidationSchema = z.object({
     name: z.string({
         message: "Name is requierd"
     }).min(1, {

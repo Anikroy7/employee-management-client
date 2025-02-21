@@ -12,11 +12,13 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { FaPlus } from "react-icons/fa";
 import { Button } from "@heroui/button";
+import { useRouter } from "next/navigation";
 
 
 
 const Page: NextPage = () => {
   const { data, isLoading } = useGetAllEmployees();
+  const router = useRouter()
   if (isLoading) {
     return <div className="flex justify-center items-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -90,9 +92,9 @@ const Page: NextPage = () => {
                   </TableCell>
                   <TableCell>
                     <div className="relative flex items-center gap-2">
-                      <Tooltip content="Edit user">
+                      <Tooltip  content="Edit employee">
                         <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                          <EditIcon />
+                          <EditIcon onClick={()=>router.push(`/update-employee/${employee.id}`)}/>
                         </span>
                       </Tooltip>
                       <ConfirmationModal
@@ -109,9 +111,7 @@ const Page: NextPage = () => {
                 </TableRow>)
               }
             </TableBody> : <TableBody emptyContent={"No employee found to display."}>{[]}</TableBody>
-
           }
-
         </Table>
       </div>
     </>

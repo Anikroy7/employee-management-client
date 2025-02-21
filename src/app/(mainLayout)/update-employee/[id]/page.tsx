@@ -11,23 +11,31 @@ import { FieldValues } from "react-hook-form";
 import { MdClose, MdOutlineAttachment } from "react-icons/md";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { employeeValidationSchema } from "@/src/validation/employee.validation";
-import { useCreateEmployee } from "@/src/hooks/employee.hook";
-import { defaultImageUrl } from "../constants";
+import { useGetSinglEmployee, useUpdateEmployee } from "@/src/hooks/employee.hook";
+import { useParams } from "next/navigation";
 import uploadImage from "@/src/utils/uploadImage";
 
 
 
-function AddEmployeeForm() {
-    const { mutate: handleCreateEmployee, data, isPending } = useCreateEmployee()
+function UpdateEmployeeForm() {
+    const { id } = useParams();
     const { image, avatarPreview, handleAvatarChange, handleRemoveImage } = useImagePreview()
-    let imageUrl = defaultImageUrl;
+    const { data, isLoading } = useGetSinglEmployee(id as string);
+
+    const { mutate: handleUpdateEmployee, data: updatedEmployee, isPending } = useUpdateEmployee()
+
     const onSubmit = async (data: FieldValues) => {
         if (image) {
-            imageUrl = await uploadImage(image)
+            const imageUrl = await uploadImage(image);
+            data.imageUrl = imageUrl;
         }
-        handleCreateEmployee({ ...data, imageUrl })
+        delete data.email
+        handleUpdateEmployee({
+            id: id as string,
+            employeeData: { ...data }
+        })
     }
-    console.log(data, isPending)
+    console.log(updatedEmployee, isPending)
     return (
         <section className="flex justify-center items-center min-h-screen">
             <div className="w-[70%] p-6 rounded-lg shadow-lg">
@@ -35,6 +43,12 @@ function AddEmployeeForm() {
                 <EMForm
                     resolver={zodResolver(employeeValidationSchema)}
                     onSubmit={onSubmit}
+                    defaultValues={{
+                        name: data?.data.name,
+                        email: data?.data?.email,
+                        address: data?.data?.address,
+                        phone: data?.data?.phone,
+                    }}
                 >
 
                     <div className="py-3">
@@ -110,7 +124,7 @@ function AddEmployeeForm() {
 const Page = () => {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <AddEmployeeForm />
+            <UpdateEmployeeForm />
         </Suspense>
     );
 };
