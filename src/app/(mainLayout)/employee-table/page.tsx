@@ -18,7 +18,7 @@ import { Button } from "@heroui/button";
 import { useRouter } from "next/navigation";
 
 import { TEmployee } from "@/src/types";
-import { useGetAllEmployees, useUpdateEmployee } from "@/src/hooks/employee.hook";
+import { useGetAllEmployees, useGetAllEmployeesWithFilter, useUpdateEmployee } from "@/src/hooks/employee.hook";
 import ConfirmationModal from "@/src/components/modal/ConfirmationModal";
 import {
   DeleteIcon,
@@ -32,13 +32,15 @@ import { MdFilterList } from "react-icons/md";
 import { Select, SelectItem } from "@heroui/select";
 import useDebounce from "@/src/hooks/debounce.hook";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
 
 const Page: NextPage = () => {
-  const { mutate: handleGetAllEmployees, data, isPending } = useGetAllEmployees();
-  const {mutate:updateEmployeeStatus, isPending:updatePending}= useUpdateEmployee()
+  const [employees, setEmployees] = useState<TEmployee[]>([]);
+  const { data: allEmployeeData } = useGetAllEmployees({});
+  const { mutate: handleGetAllEmployeesWithFilter, data, isPending } = useGetAllEmployeesWithFilter();
+  const { mutate: updateEmployeeStatus, isPending: updatePending } = useUpdateEmployee()
   const router = useRouter();
   const { watch, register } = useForm()
   const searchField = watch('search');
@@ -47,8 +49,21 @@ const Page: NextPage = () => {
   const statusValue = useDebounce(statusField, 500);
 
   useEffect(() => {
-    handleGetAllEmployees({ searchTerm: searchValue || '', status: statusValue || '' });
+    handleGetAllEmployeesWithFilter({ searchTerm: searchValue || '', status: statusValue || '' });
   }, [searchValue, statusValue]);
+
+  useEffect(() => {
+    if (allEmployeeData) {
+      setEmployees(allEmployeeData.data.data)
+    }
+  }, [allEmployeeData]);
+
+  useEffect(() => {
+    if (data) {
+      setEmployees([])
+      setEmployees(data?.data?.data || [])
+    }
+  }, [data]);
 
   if (isPending) {
     return (
@@ -57,10 +72,10 @@ const Page: NextPage = () => {
       </div>
     );
   }
-  const handleChangeStatus= async (id: string, status: string) => {
-
+  const handleChangeStatus = async (id: string, status: string) => {
+    updateEmployeeStatus({ id, employeeData: { status } })
   }
-  const employees = data?.data?.data || [];
+  // const employees = data?.data?.data || [];
 
   return (
     <>
@@ -127,7 +142,9 @@ const Page: NextPage = () => {
                   className="w-full pl-10"
                   placeholder="Filter by status"
                   {...register('status')}
+                  aria-label="Filter by status"
                 >
+                  <SelectItem key="">All</SelectItem>
                   <SelectItem key="ACTIVE">Active</SelectItem>
                   <SelectItem key="BLOCKED">Blocked</SelectItem>
                 </Select>
@@ -184,28 +201,23 @@ const Page: NextPage = () => {
                             <p className="text-sm font-semibold">Change Status To</p>
                             {
                               employee.status === "ACTIVE" ? (
-                                <Button
-                                  color="danger"
-                                  fullWidth
-                                  variant="flat"
-                                  size="sm"
-                                onClick={() => handleChangeStatus(employee.id, "blocked")}
+                                <button
+                                  className="w-full py-1 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                  onClick={() => handleChangeStatus(employee.id, "BLOCKED")}
                                 >
                                   Blocked
-                                </Button>
+                                </button>
                               ) : (
-                                <Button
-                                  color="success"
-                                  fullWidth
-                                  variant="flat"
-                                  size="sm"
-                                onClick={() => handleChangeStatus(employee.id, "active")}
+                                <button
+
+                                  className="w-full py-1 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                  onClick={() => handleChangeStatus(employee.id, "ACTIVE")}
                                 >
                                   Active
-                                </Button>
+                                </button>
                               )
                             }
-                           
+
                           </div>
                         </PopoverContent>
                       </Popover>

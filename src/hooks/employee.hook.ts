@@ -28,9 +28,21 @@ export const useCreateEmployee = () => {
   });
 };
 
-export const useGetAllEmployees = () => {
+export const useGetAllEmployees = (params: FieldValues) => {
+  return useQuery({
+    queryKey: ["GET_ALL_EMPLOYEE"],
+    queryFn: async () => {
+      const response = await getAllEmployees(params);
+
+      return response;
+    },
+  });
+};
+
+
+export const useGetAllEmployeesWithFilter = () => {
   return useMutation<any, Error, FieldValues>({
-    mutationKey: ["GET_ALL_EMPLOYEE"],
+    mutationKey: ["GET_ALL_EMPLOYEE_WITH_FILTER"],
     mutationFn: async (filters) => {
       return await getAllEmployees(filters);
     },
@@ -75,6 +87,7 @@ export const useGetSinglEmployee = (id: string) => {
     },
   });
 };
+
 
 export const useUpdateEmployee = () => {
   return useMutation<any, Error, FieldValues>({
