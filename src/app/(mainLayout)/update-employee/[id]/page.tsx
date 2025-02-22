@@ -126,8 +126,9 @@ function UpdateEmployeeForm() {
             className="my-3 w-full rounded-md bg-default-900 text-default"
             size="lg"
             type="submit"
+            isLoading={isPending}
           >
-            Update
+            {isPending?"Updating...":"Update"}
           </Button>
         </EMForm>
       </div>

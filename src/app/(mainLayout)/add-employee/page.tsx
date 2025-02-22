@@ -3,7 +3,7 @@
 import { Avatar } from "@heroui/avatar";
 import { Badge } from "@heroui/badge";
 import { Button } from "@heroui/button";
-import { Suspense, use, useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { FieldValues } from "react-hook-form";
 import { MdClose, MdOutlineAttachment } from "react-icons/md";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +19,7 @@ import uploadImage from "@/src/utils/uploadImage";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function AddEmployeeForm() {
-  const { mutate: handleCreateEmployee, data } = useCreateEmployee();
+  const { mutate: handleCreateEmployee, data , isPending} = useCreateEmployee();
   const { image, avatarPreview, handleAvatarChange, handleRemoveImage } =
     useImagePreview();
   const searchParams = useSearchParams();
@@ -99,8 +99,9 @@ function AddEmployeeForm() {
             className="my-3 w-full rounded-md bg-default-900 text-default"
             size="lg"
             type="submit"
+            isLoading={isPending}
           >
-            Add
+            {isPending ? "Adding..." : "Add"}
           </Button>
         </EMForm>
       </div>
