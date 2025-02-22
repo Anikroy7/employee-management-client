@@ -10,23 +10,38 @@ import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import EmployeeCard from "@/src/components/card/EmployeeCard";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useDebounce from "@/src/hooks/debounce.hook";
-import { useGetAllEmployees } from "@/src/hooks/employee.hook";
+import { useGetAllEmployees, useGetAllEmployeesWithFilter } from "@/src/hooks/employee.hook";
+import { useRouter } from "next/navigation";
 
 const Page: NextPage = () => {
-  const { mutate: handleGetAllEmployees, data, isPending } = useGetAllEmployees();
+  const [employees, setEmployees] = useState<TEmployee[]>([]);
+  const { data: allEmployeeData } = useGetAllEmployees({});
+  const { mutate: handleGetAllEmployeesWithFilter, data, isPending } = useGetAllEmployeesWithFilter();
+  const router = useRouter();
   const { watch, register } = useForm()
   const searchField = watch('search');
   const statusField = watch('status');
   const searchValue = useDebounce(searchField, 500);
   const statusValue = useDebounce(statusField, 500);
 
+  useEffect(() => {
+    handleGetAllEmployeesWithFilter({ searchTerm: searchValue || '', status: statusValue || '' });
+  }, [searchValue, statusValue]);
 
   useEffect(() => {
-    handleGetAllEmployees({ searchTerm: searchValue|| '', status: statusValue || '' });
-  }, [searchValue,statusValue]);
+    if (allEmployeeData) {
+      setEmployees(allEmployeeData.data.data)
+    }
+  }, [allEmployeeData]);
 
+  useEffect(() => {
+    if (data) {
+      setEmployees([])
+      setEmployees(data?.data?.data || [])
+    }
+  }, [data]);
 
   if (isPending) {
     return (
@@ -35,14 +50,14 @@ const Page: NextPage = () => {
       </div>
     );
   }
-  const employees = data?.data?.data;
+  // const employees = data?.data?.data;
 
   return (
     <div className="container mx-auto p-6">
       <div>
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-semibold"> </h1>
-          <Link href="/add-employee">
+          <Link href="/add-employee?redirect=/employee-list">
             <Button className="flex items-center gap-2 my-3 w-full rounded-md bg-default-900 text-default">
               <FaPlus size={16} /> Add Employee
             </Button>
@@ -104,6 +119,7 @@ const Page: NextPage = () => {
               placeholder="Filter by status"
               aria-label="Filter by status"
             >
+              <SelectItem key="">ALL</SelectItem>
               <SelectItem key="ACTIVE">Active</SelectItem>
               <SelectItem key="BLOCKED">Blocked</SelectItem>
             </Select>

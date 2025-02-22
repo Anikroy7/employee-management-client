@@ -3,7 +3,7 @@
 import { Avatar } from "@heroui/avatar";
 import { Badge } from "@heroui/badge";
 import { Button } from "@heroui/button";
-import { Suspense } from "react";
+import { Suspense, use, useEffect } from "react";
 import { FieldValues } from "react-hook-form";
 import { MdClose, MdOutlineAttachment } from "react-icons/md";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,12 +16,18 @@ import useImagePreview from "@/src/hooks/imagePreview.hook";
 import EMInput from "@/src/components/form/EMInput";
 import EMForm from "@/src/components/form/EMForm";
 import uploadImage from "@/src/utils/uploadImage";
+import { useSearchParams } from "next/navigation";
 
 function AddEmployeeForm() {
-  const { mutate: handleCreateEmployee } = useCreateEmployee();
+  const { mutate: handleCreateEmployee, data } = useCreateEmployee();
   const { image, avatarPreview, handleAvatarChange, handleRemoveImage } =
     useImagePreview();
   let imageUrl = defaultImageUrl;
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
   const onSubmit = async (data: FieldValues) => {
     if (image) {
       imageUrl = await uploadImage(image);

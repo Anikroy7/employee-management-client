@@ -31,7 +31,7 @@ import { Input } from "@heroui/input";
 import { MdFilterList } from "react-icons/md";
 import { Select, SelectItem } from "@heroui/select";
 import useDebounce from "@/src/hooks/debounce.hook";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
@@ -197,28 +197,33 @@ const Page: NextPage = () => {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent>
-                          <div className="p-3 space-y-2">
-                            <p className="text-sm font-semibold">Change Status To</p>
-                            {
-                              employee.status === "ACTIVE" ? (
-                                <button
-                                  className="w-full py-1 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500"
-                                  onClick={() => handleChangeStatus(employee.id, "BLOCKED")}
-                                >
-                                  Blocked
-                                </button>
-                              ) : (
-                                <button
+                          {(onClose) =>
+                          (<>
+                            <div className="p-3 space-y-2">
+                              <p className="text-sm font-semibold">Change Status To</p>
+                              {
+                                employee.status === "ACTIVE" ? (
+                                  <button
+                                    className="w-full py-1 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    onClick={() => handleChangeStatus(employee.id, "BLOCKED")}
+                                  >
+                                    Blocked
+                                  </button>
+                                ) : (
+                                  <button
 
-                                  className="w-full py-1 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500"
-                                  onClick={() => handleChangeStatus(employee.id, "ACTIVE")}
-                                >
-                                  Active
-                                </button>
-                              )
-                            }
+                                    className="w-full py-1 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    onClick={() => handleChangeStatus(employee.id, "ACTIVE")}
+                                  >
+                                    Active
+                                  </button>
+                                )
+                              }
 
-                          </div>
+                            </div>
+                          </>)
+
+                          }
                         </PopoverContent>
                       </Popover>
 
