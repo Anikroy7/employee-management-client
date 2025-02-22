@@ -29,14 +29,20 @@ export const useCreateEmployee = () => {
 };
 
 export const useGetAllEmployees = () => {
-  return useQuery({
-    queryKey: ["GET_ALL_EMPLOYEE"],
-    queryFn: async () => {
-      const response = await getAllEmployees();
-
-      return response;
+  return useMutation<any, Error, FieldValues>({
+    mutationKey: ["GET_ALL_EMPLOYEE"],
+    mutationFn: async (filters) => {
+      return await getAllEmployees(filters);
     },
-  });
+    onSuccess: (data) => {
+      if (data) {
+        return;
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });;
 };
 
 export const useDeleteEmployee = () => {

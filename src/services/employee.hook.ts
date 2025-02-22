@@ -2,9 +2,10 @@ import { FieldValues } from "react-hook-form";
 
 import axiosInstance from "../libs/AxiosInstance";
 
-export const getAllEmployees = async () => {
+export const getAllEmployees = async (filters:FieldValues) => {
+  console.log('filters', filters)
   try {
-    const { data } = await axiosInstance.get("/employee/all");
+    const { data } = await axiosInstance.get(`/employee/all`, { params: filters });
 
     return data;
   } catch (error: any) {

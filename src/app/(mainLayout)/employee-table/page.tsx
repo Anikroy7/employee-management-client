@@ -18,7 +18,7 @@ import { Button } from "@heroui/button";
 import { useRouter } from "next/navigation";
 
 import { TEmployee } from "@/src/types";
-import { useGetAllEmployees } from "@/src/hooks/employee.hook";
+import { useGetAllEmployees, useUpdateEmployee } from "@/src/hooks/employee.hook";
 import ConfirmationModal from "@/src/components/modal/ConfirmationModal";
 import {
   DeleteIcon,
@@ -30,17 +30,35 @@ import {
 import { Input } from "@heroui/input";
 import { MdFilterList } from "react-icons/md";
 import { Select, SelectItem } from "@heroui/select";
+import useDebounce from "@/src/hooks/debounce.hook";
+import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { HiOutlineSwitchHorizontal } from "react-icons/hi";
+import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
 
 const Page: NextPage = () => {
-  const { data, isLoading } = useGetAllEmployees();
+  const { mutate: handleGetAllEmployees, data, isPending } = useGetAllEmployees();
+  const {mutate:updateEmployeeStatus, isPending:updatePending}= useUpdateEmployee()
   const router = useRouter();
+  const { watch, register } = useForm()
+  const searchField = watch('search');
+  const statusField = watch('status');
+  const searchValue = useDebounce(searchField, 500);
+  const statusValue = useDebounce(statusField, 500);
 
-  if (isLoading) {
+  useEffect(() => {
+    handleGetAllEmployees({ searchTerm: searchValue || '', status: statusValue || '' });
+  }, [searchValue, statusValue]);
+
+  if (isPending) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
       </div>
     );
+  }
+  const handleChangeStatus= async (id: string, status: string) => {
+
   }
   const employees = data?.data?.data || [];
 
@@ -97,6 +115,7 @@ const Page: NextPage = () => {
                   size="sm"
                   startContent={<SearchIcon size={18} />}
                   type="search"
+                  {...register('search')}
                 />
               </div>
 
@@ -105,11 +124,12 @@ const Page: NextPage = () => {
 
                 <Select
                   labelPlacement="outside"
-                  className="w-full pl-10" // Ensure space for the icon
+                  className="w-full pl-10"
                   placeholder="Filter by status"
+                  {...register('status')}
                 >
-                  <SelectItem key="active">Active</SelectItem>
-                  <SelectItem key="blocked">Blocked</SelectItem>
+                  <SelectItem key="ACTIVE">Active</SelectItem>
+                  <SelectItem key="BLOCKED">Blocked</SelectItem>
                 </Select>
               </div>
 
@@ -125,7 +145,7 @@ const Page: NextPage = () => {
             <TableColumn>ADDRESS</TableColumn>
             <TableColumn>PHONE</TableColumn>
             <TableColumn>STATUS</TableColumn>
-            <TableColumn>ACTIVE</TableColumn>
+            <TableColumn>ACTIONS</TableColumn>
           </TableHeader>
           {employees.length > 0 ? (
             <TableBody>
@@ -151,21 +171,60 @@ const Page: NextPage = () => {
                     </Chip>
                   </TableCell>
                   <TableCell>
-                    <div className="relative flex items-center gap-2">
-                      <Tooltip content="Edit employee">
-                        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                          <EditIcon
-                            onClick={() =>
-                              router.push(`/update-employee/${employee.id}`)
+                    <div className="relative flex items-center">
+                      {/* Change Status Dropdown */}
+                      <Popover placement="bottom">
+                        <PopoverTrigger>
+                          <Button isIconOnly variant="light" className="text-lg text-primary cursor-pointer active:opacity-50">
+                            <HiOutlineSwitchHorizontal size={22} />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <div className="p-3 space-y-2">
+                            <p className="text-sm font-semibold">Change Status To</p>
+                            {
+                              employee.status === "ACTIVE" ? (
+                                <Button
+                                  color="danger"
+                                  fullWidth
+                                  variant="flat"
+                                  size="sm"
+                                onClick={() => handleChangeStatus(employee.id, "blocked")}
+                                >
+                                  Blocked
+                                </Button>
+                              ) : (
+                                <Button
+                                  color="success"
+                                  fullWidth
+                                  variant="flat"
+                                  size="sm"
+                                onClick={() => handleChangeStatus(employee.id, "active")}
+                                >
+                                  Active
+                                </Button>
+                              )
                             }
-                          />
+                           
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      {/* Edit Employee */}
+                      <Tooltip content="Edit Employee">
+                        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                          <EditIcon onClick={() => router.push(`/update-employee/${employee.id}`)} />
                         </span>
                       </Tooltip>
+
+
+
+                      {/* Delete Employee */}
                       <ConfirmationModal
                         employeeId={employee.id}
                         modalTitle={
-                          <Tooltip color="danger" content="Delete employee">
-                            <span className="text-lg  text-danger cursor-pointer active:opacity-50">
+                          <Tooltip color="danger" content="Delete Employee">
+                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
                               <DeleteIcon />
                             </span>
                           </Tooltip>
