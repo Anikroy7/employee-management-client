@@ -48,8 +48,8 @@ export const SidebarWrapper = () => {
               <CollapseItems
                 icon={<FaUsers className="w-5 h-5" />}
                 items={[
-                  { name: "Employee Table", path: "/employee-table" },
                   { name: "Employee List", path: "/employee-list" },
+                  { name: "Employee Table", path: "/employee-table" },
                 ]}
                 title="Employees"
               />

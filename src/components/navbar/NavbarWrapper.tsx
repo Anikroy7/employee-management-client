@@ -1,8 +1,15 @@
-import { Navbar, NavbarContent } from "@heroui/navbar";
+
+'use client';
+import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
 
 import { ThemeSwitch } from "../theme-switch";
 
 import NavbarDropDown from "./NavbarDropDown";
+import Link from "next/link";
+import { Button } from "@heroui/button";
+import { FaBars } from "react-icons/fa";
+import { useState } from "react";
+import { useSidebarContext } from "@/src/context/layout_context";
 
 export const AcmeLogo = () => {
   return (
@@ -22,14 +29,29 @@ interface Props {
 }
 
 export const NavbarWrapper = ({ children }: Props) => {
+  const {setCollapsed}= useSidebarContext()
+
   return (
     <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
       <Navbar maxWidth="2xl">
+        <div className="md:hidden flex items-center">
+          <Button
+            isIconOnly
+            variant="light"
+            onPress={() => setCollapsed()}
+          >
+            <FaBars size={20} />
+          </Button>
+        </div>
+
         <NavbarContent as="div" justify="end">
           <ThemeSwitch />
           <NavbarDropDown />
         </NavbarContent>
       </Navbar>
+
+      
+
       {children}
     </div>
   );

@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Employee Mangement System",
+  description: "Employee Management System is a platform for managing employee records, , and handling administrative tasks efficiently. It enables easy search, filtering, and status updates, ensuring smooth workforce management. ",
   navItems: [
     {
       label: "Home",
