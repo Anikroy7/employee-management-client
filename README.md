@@ -1,53 +1,70 @@
-# Next.js & HeroUI Template
 
-This is a template for creating applications using Next.js 14 (app directory) and HeroUI (v2).
+![Logo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfdu_cMzmPjjvoTtzsqtNpKNTzabogAiqdDA&s)
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/heroui/next-app-template)
 
-## Technologies Used
+# Employee Management System
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI v2](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+Employee Management System is a platform for managing employee records, , and handling administrative tasks efficiently. It enables easy search, filtering, and status updates, ensuring smooth workforce management. 
 
-## How to Use
+## Live Link (FRONTEND)
 
-### Use the template with create-next-app
+https://employee-management-client-one.vercel.app
 
-To create a new project based on this template using `create-next-app`, run the following command:
 
-```bash
-npx create-next-app -e https://github.com/heroui-inc/next-app-template
-```
+## Live Link (BACKEND)
 
-### Install dependencies
+https://employee-management-server-alpha.vercel.app
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+## Tech Stack
+
+**Client:** Typescript, Next js, Next ui, Tanstack query.
+
+**Server:** Node js, Express js, PostgreSQL, Primsa
+
+
+## Run Locally
+
+Clone the project
 
 ```bash
-npm install
+  git clone https://github.com/Anikroy7/employee-management-client
 ```
 
-### Run the development server
+Go to the project directory
 
 ```bash
-npm run dev
+  cd employee-management-client
 ```
 
-### Setup pnpm (optional)
-
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+Install dependencies
 
 ```bash
-public-hoist-pattern[]=*@heroui/*
+  npm install
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+Start the server
 
-## License
+```bash
+  npm run dev
+```
 
-Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
+
+## Features
+
+- Light/dark mode toggle
+- Crud for employee
+- Optimzed searching and filtering
+- Pagination
+- Full Responsive
+
+
+## Issues
+
+- Need to implement authentication system
+
+
+
+## Authors
+
+- [@anikroy](https://github.com/Anikroy7)
+
