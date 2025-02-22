@@ -2,9 +2,9 @@
 
 import { Controller, useFormContext } from "react-hook-form";
 import React from "react";
+import { Input } from "@heroui/input";
 
 import { IInput } from "@/src/types";
-import { Input } from "@heroui/input";
 
 interface IProps extends IInput {}
 const EMInput = React.memo(function NBInput({
@@ -22,7 +22,7 @@ const EMInput = React.memo(function NBInput({
   } = useFormContext();
 
   const errorMessage = errors?.[name]?.message as string | undefined;
-  
+
   return (
     <Controller
       control={control}

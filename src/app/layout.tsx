@@ -2,8 +2,10 @@ import "@/src/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
-import { siteConfig } from "@/src/config/site";
+
 import { Providers } from "../libs/providers";
+
+import { siteConfig } from "@/src/config/site";
 
 const inter = Inter({
   weight: "400",
@@ -40,7 +42,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           {children}
-           <Toaster />
+          <Toaster />
         </Providers>
       </body>
     </html>

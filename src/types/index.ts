@@ -4,9 +4,8 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-
 export type TEmployee = {
-  id:string;
+  id: string;
   address: string;
   createdAt: string;
   email: string;
@@ -15,8 +14,7 @@ export type TEmployee = {
   phone: string;
   status: string;
   updatedAt: string;
-}
-
+};
 
 export interface IInput {
   variant?: "flat" | "bordered" | "faded" | "underlined";

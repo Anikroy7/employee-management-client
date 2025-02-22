@@ -1,43 +1,44 @@
 "use client";
-import {useEffect, useState} from 'react';
-import { useIsomorphicLayoutEffect } from './isomorphicLayoutEffect.hook';
+import { useEffect, useState } from "react";
+
+import { useIsomorphicLayoutEffect } from "./isomorphicLayoutEffect.hook";
 
 type ReturnType = [boolean, (locked: boolean) => void];
 
 export const useLockedBody = (initialLocked = false): ReturnType => {
-   const [locked, setLocked] = useState(initialLocked);
+  const [locked, setLocked] = useState(initialLocked);
 
-   useIsomorphicLayoutEffect(() => {
-      if (!locked) {
-         return;
-      }
+  useIsomorphicLayoutEffect(() => {
+    if (!locked) {
+      return;
+    }
 
-      const originalOverflow = document.body.style.overflow;
-      const originalPaddingRight = document.body.style.paddingRight;
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
 
-      document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
-      const root = document.getElementById('___gatsby'); // or root
-      const scrollBarWidth = root ? root.offsetWidth - root.scrollWidth : 0;
+    const root = document.getElementById("___gatsby"); // or root
+    const scrollBarWidth = root ? root.offsetWidth - root.scrollWidth : 0;
+
+    if (scrollBarWidth) {
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    }
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
 
       if (scrollBarWidth) {
-         document.body.style.paddingRight = `${scrollBarWidth}px`;
+        document.body.style.paddingRight = originalPaddingRight;
       }
+    };
+  }, [locked]);
 
-      return () => {
-         document.body.style.overflow = originalOverflow;
+  useEffect(() => {
+    if (locked !== initialLocked) {
+      setLocked(initialLocked);
+    }
+  }, [initialLocked]);
 
-         if (scrollBarWidth) {
-            document.body.style.paddingRight = originalPaddingRight;
-         }
-      };
-   }, [locked]);
-
-   useEffect(() => {
-      if (locked !== initialLocked) {
-         setLocked(initialLocked);
-      }
-   }, [initialLocked]);
-
-   return [locked, setLocked];
+  return [locked, setLocked];
 };

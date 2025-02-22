@@ -1,6 +1,3 @@
-
-
-
 const uploadImage = async (imageFile: File) => {
   const url = `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMAGE_KEY}`;
   let newImageUrl = null;

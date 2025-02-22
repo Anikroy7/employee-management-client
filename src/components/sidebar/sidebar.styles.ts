@@ -8,7 +8,6 @@ export const SidebarWrapper = tv({
       true: "translate-x-0 ml-0 pt-20 [display:inherit]",
     },
   },
-  
 });
 export const Overlay = tv({
   base: "bg-[rgb(15_23_42/0.3)] fixed inset-0 z-[201] opacity-80 transition-opacity md:hidden md:z-auto md:opacity-100",

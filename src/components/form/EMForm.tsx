@@ -13,12 +13,19 @@ interface IProps extends formConfig {
   onSubmit: SubmitHandler<any>;
 }
 
-export default function EMForm({ children, onSubmit,resolver, defaultValues }: IProps) {
+export default function EMForm({
+  children,
+  onSubmit,
+  resolver,
+  defaultValues,
+}: IProps) {
   const formConfig: formConfig = {};
+
   if (resolver) {
     formConfig["resolver"] = resolver;
   }
   const methods = useForm(formConfig);
+
   useEffect(() => {
     if (defaultValues) {
       methods.reset(defaultValues, { keepDefaultValues: false });
