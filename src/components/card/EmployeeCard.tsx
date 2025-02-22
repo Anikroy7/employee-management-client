@@ -36,7 +36,7 @@ export default function EmployeeCard({ employee }: { employee: TEmployee }) {
                     {/* Edit Button */}
                     <Tooltip content="Edit Employee">
                         <button
-                            onClick={() => router.push(`/update-employee/${employee.id}`)}
+                            onClick={() => router.push(`/update-employee/${employee.id}?redirect=/employee-list`)}
                             className="text-white p-2 rounded-full hover:bg-gray-500 focus:outline-none transition-all"
                         >
                             <FaEdit size={18} />

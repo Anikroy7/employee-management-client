@@ -32,29 +32,41 @@ import { MdFilterList } from "react-icons/md";
 import { Select, SelectItem } from "@heroui/select";
 import useDebounce from "@/src/hooks/debounce.hook";
 import { set, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
+import { Pagination } from "@heroui/pagination";
 
 const Page: NextPage = () => {
   const [employees, setEmployees] = useState<TEmployee[]>([]);
-  const { data: allEmployeeData } = useGetAllEmployees({});
-  const { mutate: handleGetAllEmployeesWithFilter, data, isPending } = useGetAllEmployeesWithFilter();
+  const { data: allEmployeeData, isPending: allDataPending } = useGetAllEmployees({});
+  const { mutate: handleGetAllEmployeesWithFilter, data, isPending: filterPending } = useGetAllEmployeesWithFilter();
   const { mutate: updateEmployeeStatus, isPending: updatePending } = useUpdateEmployee()
   const router = useRouter();
+  const isFirstRender = useRef(true);
   const { watch, register } = useForm()
-  const searchField = watch('search');
-  const statusField = watch('status');
+  const searchField = watch('search') || '';
+  const statusField = watch('status') || '';
   const searchValue = useDebounce(searchField, 500);
   const statusValue = useDebounce(statusField, 500);
 
+  // for pagintion
+  const [limit, setLimit] = useState(9);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [total, setTotal] = useState(0);
+
   useEffect(() => {
-    handleGetAllEmployeesWithFilter({ searchTerm: searchValue || '', status: statusValue || '' });
-  }, [searchValue, statusValue]);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    handleGetAllEmployeesWithFilter({ searchTerm: searchValue || '', status: statusValue || '', limit: limit, page: currentPage });
+  }, [searchValue, statusValue, currentPage]);
 
   useEffect(() => {
     if (allEmployeeData) {
       setEmployees(allEmployeeData.data.data)
+      setTotal(allEmployeeData.data.meta.total)
     }
   }, [allEmployeeData]);
 
@@ -65,17 +77,10 @@ const Page: NextPage = () => {
     }
   }, [data]);
 
-  if (isPending) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
-      </div>
-    );
-  }
+
   const handleChangeStatus = async (id: string, status: string) => {
     updateEmployeeStatus({ id, employeeData: { status } })
   }
-  // const employees = data?.data?.data || [];
 
   return (
     <>
@@ -83,7 +88,7 @@ const Page: NextPage = () => {
         <div>
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-semibold"> </h1>
-            <Link href="/add-employee">
+            <Link href="/add-employee?redirect=/employee-table">
               <Button className="flex items-center gap-2 my-3 w-full rounded-md bg-default-900 text-default">
                 <FaPlus size={16} /> Add Employee
               </Button>
@@ -154,7 +159,22 @@ const Page: NextPage = () => {
           </div>
         </div>
 
-        <Table aria-label="Example static collection table">
+        <Table
+          aria-label="Example static collection table"
+          bottomContent={
+            <div className="flex w-full justify-center">
+              <Pagination
+                isCompact
+                showControls
+                showShadow
+                color="secondary"
+                total={Math.ceil(total / limit)}
+                page={currentPage}
+                onChange={(page) => setCurrentPage(page)}
+              />
+            </div>
+          }
+        >
           <TableHeader>
             <TableColumn>IMAGE</TableColumn>
             <TableColumn>NAME</TableColumn>
@@ -164,7 +184,29 @@ const Page: NextPage = () => {
             <TableColumn>STATUS</TableColumn>
             <TableColumn>ACTIONS</TableColumn>
           </TableHeader>
-          {employees.length > 0 ? (
+
+          {/* Show Skeleton Loading if Data is Being Fetched */}
+          {(allDataPending || filterPending) ? (
+            <TableBody>
+              {Array.from({ length: limit }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell><div className="w-10 h-10 bg-gray-300 rounded-full animate-pulse" /></TableCell>
+                  <TableCell><div className="w-24 h-5 bg-gray-300 rounded-md animate-pulse" /></TableCell>
+                  <TableCell><div className="w-32 h-5 bg-gray-300 rounded-md animate-pulse" /></TableCell>
+                  <TableCell><div className="w-40 h-5 bg-gray-300 rounded-md animate-pulse" /></TableCell>
+                  <TableCell><div className="w-24 h-5 bg-gray-300 rounded-md animate-pulse" /></TableCell>
+                  <TableCell><div className="w-16 h-5 bg-gray-300 rounded-md animate-pulse" /></TableCell>
+                  <TableCell>
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 bg-gray-300 rounded-md animate-pulse" />
+                      <div className="w-6 h-6 bg-gray-300 rounded-md animate-pulse" />
+                      <div className="w-6 h-6 bg-gray-300 rounded-md animate-pulse" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          ) : employees.length > 0 ? (
             <TableBody>
               {employees.map((employee: TEmployee) => (
                 <TableRow key={employee.id}>
@@ -178,9 +220,7 @@ const Page: NextPage = () => {
                   <TableCell>
                     <Chip
                       className="capitalize"
-                      color={
-                        employee.status === "ACTIVE" ? "success" : "danger"
-                      }
+                      color={employee.status === "ACTIVE" ? "success" : "danger"}
                       size="sm"
                       variant="flat"
                     >
@@ -211,7 +251,6 @@ const Page: NextPage = () => {
                                   </button>
                                 ) : (
                                   <button
-
                                     className="w-full py-1 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500"
                                     onClick={() => handleChangeStatus(employee.id, "ACTIVE")}
                                   >
@@ -230,11 +269,9 @@ const Page: NextPage = () => {
                       {/* Edit Employee */}
                       <Tooltip content="Edit Employee">
                         <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                          <EditIcon onClick={() => router.push(`/update-employee/${employee.id}`)} />
+                          <EditIcon onClick={() => router.push(`/update-employee/${employee.id}?redirect=/employee-table`)} />
                         </span>
                       </Tooltip>
-
-
 
                       {/* Delete Employee */}
                       <ConfirmationModal
@@ -258,6 +295,7 @@ const Page: NextPage = () => {
             </TableBody>
           )}
         </Table>
+
       </div>
     </>
   );

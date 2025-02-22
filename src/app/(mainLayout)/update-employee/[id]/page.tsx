@@ -3,11 +3,11 @@
 import { Avatar } from "@heroui/avatar";
 import { Badge } from "@heroui/badge";
 import { Button } from "@heroui/button";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { FieldValues } from "react-hook-form";
 import { MdClose, MdOutlineAttachment } from "react-icons/md";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 import { employeeValidationSchema } from "@/src/validation/employee.validation";
 import {
@@ -24,8 +24,14 @@ function UpdateEmployeeForm() {
   const { image, avatarPreview, handleAvatarChange, handleRemoveImage } =
     useImagePreview();
   const { data } = useGetSinglEmployee(id as string);
-
-  const { mutate: handleUpdateEmployee } = useUpdateEmployee();
+  const { mutate: handleUpdateEmployee, data: updatedData, isPending } = useUpdateEmployee();
+  const searchParams = useSearchParams();
+  const router = useRouter()
+  useEffect(() => {
+    if (updatedData && !isPending) {
+      router.push(searchParams.get("redirect") || "/employee-list");
+    }
+  }, [updatedData, isPending]);
 
   const onSubmit = async (data: FieldValues) => {
     if (image) {
@@ -39,6 +45,7 @@ function UpdateEmployeeForm() {
       employeeData: { ...data },
     });
   };
+  console.log(updatedData, isPending )
 
   return (
     <section className="flex justify-center items-center min-h-screen">
@@ -72,7 +79,6 @@ function UpdateEmployeeForm() {
           <div className="mt-4">
             <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-5\800 transition duration-300 ease-in-out ">
               <div className="flex flex-col items-center justify-center">
-                {/* Attachment Icon from React Icons */}
                 <MdOutlineAttachment className="w-8 h-8 text-gray-400" />
                 <span className="text-sm font-medium text-gray-500">
                   click to upload{" "}
@@ -101,8 +107,8 @@ function UpdateEmployeeForm() {
                   src={avatarPreview as string}
                 />
               </Badge>
-            ):
-            <Badge
+            ) :
+              <Badge
                 className="cursor-pointer"
                 color="danger"
                 size="lg"
@@ -121,7 +127,7 @@ function UpdateEmployeeForm() {
             size="lg"
             type="submit"
           >
-            Add
+            Update
           </Button>
         </EMForm>
       </div>

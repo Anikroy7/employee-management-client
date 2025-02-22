@@ -16,16 +16,18 @@ import useImagePreview from "@/src/hooks/imagePreview.hook";
 import EMInput from "@/src/components/form/EMInput";
 import EMForm from "@/src/components/form/EMForm";
 import uploadImage from "@/src/utils/uploadImage";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function AddEmployeeForm() {
   const { mutate: handleCreateEmployee, data } = useCreateEmployee();
   const { image, avatarPreview, handleAvatarChange, handleRemoveImage } =
     useImagePreview();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   let imageUrl = defaultImageUrl;
   useEffect(() => {
     if (data) {
-      console.log(data);
+      router.push(searchParams.get("redirect") || "/employee-list");
     }
   }, [data]);
   const onSubmit = async (data: FieldValues) => {

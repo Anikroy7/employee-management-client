@@ -10,29 +10,42 @@ import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import EmployeeCard from "@/src/components/card/EmployeeCard";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useDebounce from "@/src/hooks/debounce.hook";
 import { useGetAllEmployees, useGetAllEmployeesWithFilter } from "@/src/hooks/employee.hook";
 import { useRouter } from "next/navigation";
+import { Pagination } from "@heroui/pagination";
+import EmployeeCardSkeleton from "@/src/components/skeleton/EmployeeCardSkeleton";
 
 const Page: NextPage = () => {
   const [employees, setEmployees] = useState<TEmployee[]>([]);
-  const { data: allEmployeeData } = useGetAllEmployees({});
-  const { mutate: handleGetAllEmployeesWithFilter, data, isPending } = useGetAllEmployeesWithFilter();
-  const router = useRouter();
+  const { data: allEmployeeData, isPending: allDataPending } = useGetAllEmployees({});
+  const { mutate: handleGetAllEmployeesWithFilter, data, isPending: filterPending } = useGetAllEmployeesWithFilter();
   const { watch, register } = useForm()
-  const searchField = watch('search');
-  const statusField = watch('status');
+  const searchField = watch('search')||'';
+  const statusField = watch('status')||'';
   const searchValue = useDebounce(searchField, 500);
   const statusValue = useDebounce(statusField, 500);
 
+  // for pagintion
+  const [currentPage, setCurrentPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [limit, setLimit] = useState(9);
+  const isFirstRender = useRef(true);
   useEffect(() => {
-    handleGetAllEmployeesWithFilter({ searchTerm: searchValue || '', status: statusValue || '' });
-  }, [searchValue, statusValue]);
+    console.log(isFirstRender.current, searchValue, statusValue, currentPage)
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    handleGetAllEmployeesWithFilter({ searchTerm: searchValue || '', status: statusValue || '', limit: limit, page: currentPage });
+
+  }, [searchValue, statusValue, currentPage]);
 
   useEffect(() => {
     if (allEmployeeData) {
-      setEmployees(allEmployeeData.data.data)
+      setEmployees(allEmployeeData.data.data);
+      setTotal(allEmployeeData.data.meta.total);
     }
   }, [allEmployeeData]);
 
@@ -42,15 +55,6 @@ const Page: NextPage = () => {
       setEmployees(data?.data?.data || [])
     }
   }, [data]);
-
-  if (isPending) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
-      </div>
-    );
-  }
-  // const employees = data?.data?.data;
 
   return (
     <div className="container mx-auto p-6">
@@ -129,10 +133,27 @@ const Page: NextPage = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {employees?.map((employee: TEmployee) => (
-          <EmployeeCard key={employee.id} employee={employee} />
-        ))}
+        {(allDataPending || filterPending)
+          ? Array.from({ length: limit }).map((_, index) => <EmployeeCardSkeleton key={index} />)
+          : employees?.length > 0
+            ? employees.map((employee: TEmployee) => (
+              <EmployeeCard key={employee.id} employee={employee} />
+            ))
+            : (
+              <div className="text-center text-gray-500 col-span-full">
+                <p className="text-lg font-semibold">No employees found.</p>
+              </div>
+            )}
       </div>
+      {employees?.length > 0 && <div className="flex justify-center my-8">
+        <Pagination loop showControls color="success" initialPage={1}
+
+          total={Math.ceil(total / limit)}
+          page={currentPage}
+          onChange={(page) => setCurrentPage(page)}
+
+        />
+      </div>}
     </div>
   );
 };
